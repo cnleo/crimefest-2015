@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta name="viewport" content="width=device-width" />
+		
+		<title>Payday2 Crimefest 2015 Status</title>
+
+		<style type="text/css">
+			body {
+				font-family:"DejaVu Sans",FreeSans,"Open Sans",Arial,sans-serif;
+			}
+		
+			.status:before {
+				content:"[";
+			}
+			.status:after {
+				content:"]";
+			}
+			progress:not([value]) {
+				visibility:hidden;
+			}
+			
+			.open {
+				font-weight:bold;
+				background-color:yellow;
+			}
+			.notreached {
+				font-weight:bold;
+				background-color:red;
+			}
+			.done {
+				font-weight:bold;
+				background-color:green;
+			}
+			#currentStatusOfThisSite {
+				font-weight:bold;
+			}
+			span {
+				display:block;
+				white-space:nowrap;
+				margin:5px 0 0 0;
+			}
+			span.status {
+				display:inline;
+			}
+			
+			.soon {
+				animation: blend 5s linear  0s infinite alternate;
+			}
+			@keyframes blend {
+				0% {}
+				25% {}
+				50% {}
+				75% {}
+				100% {
+					background-color:green;
+				}
+			}
+			
+			div.row {
+
+				display:flex;
+				flex-flow: row;
+			}
+			
+			div.row div {
+				display:flex;
+				flex-direction:column;
+				/* flex-basis:25%; */
+				flex:1;
+				
+				margin:5px;
+			}
+			
+			progress {
+				margin-bottom:10px;
+			}
+			span {
+			
+			}
+			
+			@media all and (min-width: 681px) {
+				progress {
+					width:100%;
+				}
+			}
+			
+			@media all and (max-width: 680px) {
+				div.row {
+					flex-direction: column;
+				}
+				div.row {
+
+				display:block;
+				flex-flow: row;
+				}
+
+			}
+			
+			
+			
+		</style>
+
+		<script type="text/javascript">
+		
+			var statusThisSite = '';
+		
+			function goForIt () {
+			
+				statusThisSite = document.querySelector('div#currentStatusOfThisSite');
+				
+				var oReq = new XMLHttpRequest();
+				oReq.addEventListener("progress", updateProgress);
+				oReq.addEventListener("load", transferComplete);
+				oReq.addEventListener("loadstart", transferBegun);
+				oReq.addEventListener("error", transferFailed);
+				oReq.addEventListener("abort", transferCanceled);
+				
+				oReq.open("GET", "api.json", true);
+				//oReq.overrideMimeType('text/plain; charset=x-user-defined');
+				oReq.send();
+			}
+			
+			// NOT USED
+			// progress on transfers from the server to the client (downloads)
+			function updateProgress (oEvent) {
+			  if (oEvent.lengthComputable) {
+				var percentComplete = oEvent.loaded / oEvent.total;
+				// ...
+			  } else {
+				// Unable to compute progress information since the total size is unknown
+			  }
+			}
+			
+			function transferComplete(evt) {
+				console.log("The transfer is complete.");
+				//alert(this.responseText);
+				var resp = JSON.parse(this.responseText);
+					resp = resp.response;
+				//alert(resp.globalstats.crimefest_challenge_chains_1.total);
+				statusThisSite.textContent = 'Status: loaded';
+				if(resp && resp.result == 1) {
+//				try {
+
+					var challengesName = ['dallas','chains','clover','houston'];
+					var challengesStep = 2
+					
+					for (var i = 0, leng = challengesStep*challengesName.length; i < leng; i++) {
+						var currentStep = parseInt(i/4+1);
+						var currentName = challengesName[parseInt(i%4)];
+						//alert('I: ' + i + ' currentStep: ' + currentStep + ' currentName: '+ currentName);
+						var currentChallengeName = 'crimefest_challenge_'+currentName+'_'+currentStep;
+						var currentTwitterChallengeName = 'twitter_'+currentChallengeName;
+						
+						var currentValue = parseInt(resp.globalstats[currentChallengeName].total);
+						//var currentTwitterValue = '';
+						//if (resp.globalstats[currentTwitterChallengeName].total)
+						if (resp.globalstats[currentTwitterChallengeName]) {
+							var currentTwitterValue = parseInt(resp.globalstats[currentTwitterChallengeName].total);
+						}
+						
+						
+						// progress
+						if (currentChallengeName == 'crimefest_challenge_houston_1' || 
+							currentChallengeName == 'crimefest_challenge_dallas_2' || 
+							currentChallengeName == 'crimefest_challenge_chains_2') 
+						{
+							var calcValue = currentValue + currentTwitterValue;
+						//	alert(currentValue + ' ' + currentTwitterValue + ' ' + calcValue);
+						//	alert("huhu");
+						//	alert(currentChallengeName);
+							document.querySelector('#'+currentChallengeName+' progress').value = currentValue + currentTwitterValue;
+						} else {
+							document.querySelector('#'+currentChallengeName+' progress').value = currentValue;
+						}
+						//alert(currentChallengeName);
+						
+						// numbers
+						document.querySelector('#'+currentChallengeName+' .numbers').textContent = makeNiceNumbers(document.querySelector('#'+currentChallengeName+' progress').value) + ' / ' +
+						makeNiceNumbers(document.querySelector('#'+currentChallengeName+' progress').getAttribute('max'));
+						
+						// percent
+						var percentNum = Math.floor((document.querySelector('#'+currentChallengeName+'  progress').value / document.querySelector('#'+currentChallengeName+'  progress').getAttribute('max')) * 100);
+						document.querySelector('#'+currentChallengeName+'  .percent').textContent = percentNum + '% done';
+						
+						//missing
+						document.querySelector('#'+currentChallengeName+'  .missing').textContent = makeNiceNumbers(document.querySelector('#'+currentChallengeName+'  progress').getAttribute('max') - document.querySelector('#'+currentChallengeName+' progress').value) + ' missing';
+						
+						if (percentNum > 99) {
+							document.querySelector('#'+currentChallengeName+' h4 span').setAttribute('class',document.querySelector('#'+currentChallengeName+' h4 span').getAttribute('class') + ' soon');
+						}
+						
+						// TWITTER FYI
+						if (currentChallengeName == 'crimefest_challenge_houston_1' || 
+							currentChallengeName == 'crimefest_challenge_dallas_2' || 
+							currentChallengeName == 'crimefest_challenge_chains_2') 
+						{
+						
+							//progress
+							document.querySelector('#'+currentTwitterChallengeName+' progress').value = resp.globalstats[currentTwitterChallengeName].total;
+							
+							//numbers
+							document.querySelector('#'+currentTwitterChallengeName+' .numbers').textContent = makeNiceNumbers(document.querySelector('#'+currentTwitterChallengeName+' progress').value) + ' / ' + makeNiceNumbers(document.querySelector('#'+currentTwitterChallengeName+'  progress').getAttribute('max'));
+							
+							// percent
+							var percentNum = Math.floor((resp.globalstats[currentTwitterChallengeName].total / document.querySelector('#'+currentTwitterChallengeName+'  progress').getAttribute('max')) * 100);
+						document.querySelector('#'+currentTwitterChallengeName+'  .percent').textContent = percentNum + '% done';
+						
+							//missing
+							document.querySelector('#'+currentTwitterChallengeName+'  .missing').textContent = makeNiceNumbers(document.querySelector('#'+currentTwitterChallengeName+'  progress').getAttribute('max') - resp.globalstats[currentTwitterChallengeName].total) + ' missing';
+						
+							if (percentNum > 99) {
+								document.querySelector('#'+currentTwitterChallengeName+' h4 span').setAttribute('class',document.querySelector('#'+currentTwitterChallengeName+' h4 span').getAttribute('class') + ' soon');
+							}
+							
+						}
+					}
+					
+					
+						
+				//}catch(err) {
+					//statusThisSite.textContent = 'Status: unknown error';
+//					alert(err)
+				//}
+				
+				} else {
+				
+					statusThisSite.textContent = 'Status: the information from provider are not compiled (not expected what it should)';
+				}
+			}
+			
+			function transferBegun(evt) {
+				console.log("The transfer get started.");
+				statusThisSite.textContent = 'Status: loading...';
+			}
+
+			function transferFailed(evt) {
+				console.log("An error occurred while transferring the file.");
+				statusThisSite.textContent = 'Status: error (pls reload or try it later)';
+			}
+			function transferCanceled(evt) {
+				console.log("The transfer has been canceled by the user.");
+				statusThisSite.textContent = 'Status: canceld (pls reload or do it later)';
+			}
+			
+			
+			function makeNiceNumbers (numb) {
+			//	alert(typeof numb + ' ' + numb);
+			//	alert(typeof parseInt(numb,10).toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ") + ' ' +  							parseInt(numb,10).toString().replace(/\B(?=(\d{3})+(?!\d))/g, " "));
+				//return new Number(parseInt(numb,10)).toPrecision().toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+				return new Number(numb).toPrecision().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+			}
+			
+			
+		</script>
+	</head>
+	<body>
+	
+	
+<div id="currentStatusOfThisSite"></div> <span id="timer"></span>  <span>(~11:00 please <a href="#" onclick="document.location.reload(true);return false;">reload</a>)</span>
+
+<h2>Day 1-2 (first 48h)</h2>
+
+<div class="row">
+<div id="crimefest_challenge_dallas_1">
+<h3>Dallas:</h3>
+<h4>Hair Fallout <span class="status open">open</span></h4>
+<progress max="100000"></progress> <span class="numbers"></span> <span class="percent"></span> <span class="missing"></span>
+<p>Steal the warheads for Vlad in the <strong>Meltdown heist 100,000 times</strong> during the Road to Crimefest event.</p>
+</div>
+
+<div id="crimefest_challenge_chains_1">
+<h3>Chains:</h3>
+<h4>We're all Bonnie here! <span class="status done">DONE</span></h4>
+<h5>Magical Flute!</h5>
+<p>It's great to have a full mag loaded in your gun, but what's loaded in your playlist? Time to ramp it up.</p>
+<progress max="1000000"></progress> <span class="numbers"></span> <span class="percent"></span> <span class="missing"></span>
+<p><strong>Kill One Million enemies with the whisky bottle</strong> during the Road to Crimefest event.</p>
+</div>
+
+<div id="crimefest_challenge_clover_1">
+<h3>Clover:</h3>
+<h4>WOLOLOLOLOLOOO! <span class="status done">DONE</span></h4>
+<h5>a net!</h5>
+<p>"After the excitement of finding Cagliostro's dungeon, I couldn't sleep. Spent an hour upgrading Crime.Net."
+</p>
+<progress max="2000000"></progress> <span class="numbers"></span> <span class="percent"></span> <span class="missing"></span>
+<p><strong>Kill Two Million cloakers</strong> during the Road to Crimefest event.</p>
+</div>
+
+<div id="crimefest_challenge_houston_1">
+<h3>Housten:</h3>
+<h4>Wankers <span class="status open">open</span></h4>
+<progress max="120000"></progress> <span class="numbers"></span> <span class="percent"></span> <span class="missing"></span>
+<p><strong>The percentage of the Twitter challenge progress is counted towards this goal!</strong></p>
+<p>When it comes to nailing the rat who would see the Payday gang hug out to dry, you can never have enough evidence. Give Hoxton a helping hand in the <strong>FBI headquarters by helping him bust in there (steal the server) 120,000 times</strong>.</p>
+</div>
+
+</div>
+
+<hr />
+
+<h2>Day 3-4 (second 48h)</h2>
+
+<div class="row">
+
+<div id="crimefest_challenge_dallas_2">
+<h3>Dallas:</h3>
+<h4>Let's Do This <span class="status open">open</span></h4>
+<progress max="70000"></progress> <span class="numbers"></span> <span class="percent"></span> <span class="missing"></span>
+<p><strong>The percentage of the Twitter challenge progress is counted towards this goal!</strong></p>
+<p>Some may think they're walking fortresses, but to others they might as well be walking fortresses of glass. <strong>Prove it by bringing down 70,000 Bulldozers with an SMG.</strong></p>
+</div>
+
+<div id="crimefest_challenge_chains_2">
+<h3>Chains:</h3>
+<h4>Get the Fuck Down! <span class="status done">DONE</span></h4>
+<h5>Vintage Meme!</h5>
+<p>Trollololololololol</p>
+<progress max="300000"></progress> <span class="numbers"></span> <span class="percent"></span> <span class="missing"></span>
+<p><strong>The percentage of the Twitter challenge progress is counted towards this goal!</strong></p>
+<p>Any Human Resources director will tell you that people are a great asset. And that is correct - providing those people are silent, cooperative and obedient. <strong>Get the zip-ties on 300,000 civilians</strong> during the Road to Crimefast.</p>
+</div>
+
+<div id="crimefest_challenge_clover_2">
+<h3>Clover:</h3>
+<h4>Grind Fest <span class="status done">DONE</span></h4>
+<h5>Slingshot Stand!</h5>
+<p>Every enterprise needs a solid foundation. Unleashing 700 rounds-per-minute is an enterprise, right?</p>
+<progress max="1000000000"></progress> <span class="numbers"></span> <span class="percent"></span> <span class="missing"></span>
+<p><strong>Due to a calculation error this statistic was shown incorrectly, this challenge is completed! <br />
+	10<sup>11</sup> original; refused the progressbar to max. 1 billion (Mrd.) 10<sup>9</sup></strong></p>
+<p>Every journey is a transformation and a development. It is an experience, and it gives experience. In Payday style, take as much of it as you can. <strong>Earn a whopping 100 billion xp</strong> during Crimefest. Go big, or go home.</p>
+</div>
+
+<div id="crimefest_challenge_houston_2">
+<h3>Housten:</h3>
+<h4>Self Defense, I swear! <span class="status done">DONE</span></h4>
+<h5>Strange Alien Egg!</h5>
+<p>This one will make you feel like your heart is bursting from your chest.</p>
+<progress max="15000000"></progress> 
+<span class="numbers"></span> <span class="percent"></span> <span class="missing"></span>
+<p>Ancient rituals demand sacrifice. Mayan-pyramid-mountain-of-skulls levels of sacrifice. <strong>Take down 15,000,000 enemies.</strong> Let the bodies hit the floor!</p>
+</div>
+
+</div>
+
+
+<hr />
+
+<h2>Obsolet FYI:</h4>
+
+<div class="row">
+
+<div id="twitter_crimefest_challenge_houston_1">
+<h3>Housten:</h3>
+<h4>Wankers <span class="status open">open</span></h4>
+<progress max="50000"></progress> <span class="numbers"></span> <span class="percent"></span> <span class="missing"></span>
+<p>Surprise Pete Gold, the voice of Hoxton <a href="https://twitter.com/petegold_" target="_blank">@petegold_</a> by having him reach 50,000 followers on Twitter during the Road to Crimefest event.</p>
+</div>
+
+<div id="twitter_crimefest_challenge_dallas_2">
+<h3>Dallas:</h3>
+<h4>Let's Do This <span class="status open">open</span></h4>
+<progress max="50000"></progress> <span class="numbers"></span> <span class="percent"></span> <span class="missing"></span>
+<p>Surprise Eric Etebari, the face of Dallas <a href="https://twitter.com/EricEtebari" target="_blank">@EricEtebari</a> by having him reach 50,000 followers on Twitter during the Road to Crimefest event.</p>
+</div>
+
+<div id="twitter_crimefest_challenge_chains_2">
+<h3>Chains:</h3>
+<h4>Get the Fuck Down! <span class="status open">open</span></h4>
+<progress max="50000"></progress> <span class="numbers"></span> <span class="percent"></span> <span class="missing"></span>
+<p>Surprise Damion Poitier, the face and voice of Chains <a href="https://twitter.com/DamionPoitier" target="_blank">@damionpoitier</a> by having him reach 50,000 followers on Twitter during the Road to Crimefest event.</p>
+</div>
+
+</div>
+
+<hr />
+
+<footer>
+<p>This is a private site and is not affiliated with any company.</p>
+	<p>This will inform you about the progress of challenges during the Payday2 crimefest 2015. Have fun and let they Helm...</p>
+	<p><strong>This information is supplied without liability.</strong></p>
+	<p>The information from steam/twitter will be updated every 5-25 minutes automatical (mostly ~11 min. pls reload).<br />
+		New features and new challenges will be made from hand and will updated if is done or even not. <br />
+	</p>
+	<p>For more information about the Payday2 crimefest 2015 on steam visit <a href="http://steamcommunity.com/app/218620/discussions/8/523898291510413971/" title="Steamcommunity forum" target="_blank">Steamcommunity discussions</a></p>
+</footer>
+
+
+<script type="text/javascript">
+	goForIt();
+	var theTimer = document.querySelector('#timer');
+	var firstTime = parseInt(new Date().getTime()/1000);
+	var lastTime = 0;
+
+	function timerInt (){
+		var currentTime = parseInt(new Date().getTime()/1000);
+		var diffSinceFirstTime = currentTime - firstTime;
+		lastTime = diffSinceFirstTime;
+		
+		var seconds = parseInt (lastTime % 60);
+			seconds = seconds<10?'0'+seconds:seconds;
+		var minutes = parseInt (lastTime / 60);
+			minutes = minutes<10?'0'+minutes:minutes;
+			
+		if (minutes>=60) {
+			theTimer.textContent = 'Over 1h since last reload';
+		} else {
+			theTimer.textContent = minutes + ':' + seconds + ' since last reload';
+		}
+		
+	}
+	
+	var timerIntervalID = window.setInterval(timerInt, 1000);
+	
+	
+</script>
+
+	</body>
+</html>
