@@ -8,6 +8,4 @@ Source files and archive will follow.
 
 
 
-The official Payday2 Crimefest site here:
-
-http://www.overkillsoftware.com/games/roadtocrimefest/
+The official Payday2 Crimefest site here: http://www.overkillsoftware.com/games/roadtocrimefest/
