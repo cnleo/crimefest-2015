@@ -45,6 +45,9 @@
 			span.status {
 				display:inline;
 			}
+			.challenge {
+				font-weight:bold;
+			}
 			
 			.soon {
 				animation: blend 5s linear  0s infinite alternate;
@@ -145,7 +148,7 @@
 //				try {
 
 					var challengesName = ['dallas','chains','clover','houston'];
-					var challengesStep = 2
+					var challengesStep = 3
 					
 					for (var i = 0, leng = challengesStep*challengesName.length; i < leng; i++) {
 						var currentStep = parseInt(i/4+1);
@@ -259,7 +262,7 @@
 	<body>
 	
 	
-<div id="currentStatusOfThisSite"></div> <span id="timer"></span>  <span>(~11:00 please <a href="#" onclick="document.location.reload(true);return false;">reload</a>)</span>
+<div id="currentStatusOfThisSite"></div> <span id="timer"></span>  <span>(~11:00 min please <a href="#" onclick="document.location.reload(true);return false;">reload</a>)</span>
 
 <h2>Day 1-2 (first 48h)</h2>
 
@@ -308,7 +311,9 @@
 
 <div id="crimefest_challenge_dallas_2">
 <h3>Dallas:</h3>
-<h4>Let's Do This <span class="status open">open</span></h4>
+<h4>Let's Do This <span class="status done">DONE</span></h4>
+<h5>Adorning Gem!</h5>
+<p>Twinkle, twinkle, little tsar.</p>
 <progress max="70000"></progress> <span class="numbers"></span> <span class="percent"></span> <span class="missing"></span>
 <p><strong>The percentage of the Twitter challenge progress is counted towards this goal!</strong></p>
 <p>Some may think they're walking fortresses, but to others they might as well be walking fortresses of glass. <strong>Prove it by bringing down 70,000 Bulldozers with an SMG.</strong></p>
@@ -343,6 +348,47 @@
 <progress max="15000000"></progress> 
 <span class="numbers"></span> <span class="percent"></span> <span class="missing"></span>
 <p>Ancient rituals demand sacrifice. Mayan-pyramid-mountain-of-skulls levels of sacrifice. <strong>Take down 15,000,000 enemies.</strong> Let the bodies hit the floor!</p>
+</div>
+
+</div>
+
+
+<hr />
+
+<h2>Day 5-6 (third 48h)</h2>
+
+<div class="row">
+
+<div id="crimefest_challenge_dallas_3">
+	<h3>Dallas:</h3>
+	<h4>PAYDAY, All Day, Every Day <span class="status open">open</span></h4>
+	<progress max="3000000000000"></progress> <span class="numbers"></span> <span class="percent"></span> <span class="missing"></span>
+	<p class="challenge">Earn $3,000,000,000,000 during the Road to Crimefest event.</p>
+	<p>"Money doesn't make you happy. I now have $50 million but I was just as happy when I had $48 million." - Arnold Schwarzenegger.</p>
+</div>
+
+<div id="crimefest_challenge_chains_3">
+	<h3>Chains:</h3>
+	<h4>Get to cooking! <span class="status open">open</span></h4>
+	<progress max="70000"></progress> <span class="numbers"></span> <span class="percent"></span> <span class="missing"></span>
+	<p class="challenge">Complete heists where you manufacture illegal drugs 70,000 times during the Road to Crimefest event.</p>
+	<p>Sometimes you gotta break bad to make even. Sometimes you don't have to but you do it anyway.</p>
+</div>
+
+<div id="crimefest_challenge_clover_3">
+	<h3>Clover:</h3>
+	<h4>A Hundred Different Ways! <span class="status open">open</span></h4>
+	<progress max="40000"></progress> <span class="numbers"></span> <span class="percent"></span> <span class="missing"></span>
+	<p class="challenge">Eliminate the rat on the Hoxton Revenge heist 40,000 times during the Road to Crimefest event.</p>
+	<p>If you live outside the law, don't depend on it when things don't go your way. Snitches get stiches.</p>
+</div>
+
+<div id="crimefest_challenge_houston_3">
+	<h3>Housten:</h3>
+	<h4>Jacket Up! <span class="status open">open</span></h4>
+	<progress max="1000000"></progress> <span class="numbers"></span> <span class="percent"></span> <span class="missing"></span>
+	<p class="challenge">Kill 1,000,000 gangsters with any baseball bat during the Road to Crimefest event.</p>
+	<p>The sport of baseball is known as the world's greatest test of endurance and fortitude...of the viewer. Liven things up by slaying a cool 1,000,000 gangsters with a baseball bat during the Road to Crimefest. Batter up!</p>
 </div>
 
 </div>
@@ -408,6 +454,7 @@
 			
 		if (minutes>=60) {
 			theTimer.textContent = 'Over 1h since last reload';
+			// window.clearInterval(timerIntervalID);
 		} else {
 			theTimer.textContent = minutes + ':' + seconds + ' since last reload';
 		}
