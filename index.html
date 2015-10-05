@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta name="viewport" content="width=device-width" />
+		
+		<title>Payday2 Crimefest 2015 Status</title>
+
+		<style type="text/css">
+			body {
+				font-family:"DejaVu Sans",FreeSans,"Open Sans",Arial,sans-serif;
+				color:white;
+				background-color:grey;
+				font-size: 0.75em;
+				/* 
+				 Dim Gray	#696969
+				Slate Gray #708090
+				Web Gray #808080 
+				
+				*/
+			}
+			div#performance {
+				position:absolute;
+				display:block;
+				top:0;
+				bottom:0;
+				left:0;
+				right:0;
+				padding:0;
+			}
+			a {
+				color:orange;
+			}
+			div {
+				display:inline-block;
+				margin:0.5em;
+				padding:0.5em;
+				
+			}
+			div span {
+				text-align:right;
+			}
+			div p {
+
+			}
+		
+			.status:before {
+				content:"[";
+			}
+			.status:after {
+				content:"]";
+			}
+			progress:not([value]) {
+				visibility:hidden;
+			}
+			
+			.open {
+				font-weight:bold;
+				background-color:blue;
+			}
+			.notreached {
+				font-weight:bold;
+				background-color:red;
+			}
+			.done {
+				font-weight:bold;
+				background-color:green;
+			}
+			#currentStatusOfThisSite {
+				font-weight:bold;
+			}
+			span {
+				display:block;
+				white-space:pre-wrap;
+				margin:5px 0 0 0;
+			}
+			span.status {
+				display:inline;
+			}
+			.challenge {
+				font-weight:bold;
+			}
+			
+			.soon,body {
+
+				animation: blend 10s linear  0s infinite alternate;
+			}
+			@keyframes blend {
+				0% {background-color:#696969;}
+				25% {}
+				50% {background-color:#808080;}
+				75% {}
+				100% {background-color:#708090;}
+			}
+			/* 
+						https://developer.mozilla.org/de/docs/Web/Guide/CSS/CSS_Animationen_nutzen
+				 Dim Gray	#696969
+				Slate Gray #708090
+				Web Gray #808080 
+				
+				*/
+			div.row {
+
+				display:flex;
+				flex-flow: row;
+			}
+			
+			div.row div {
+				display:flex;
+				flex-direction:column;
+				/* flex-basis:25%; */
+				flex:1;
+				
+				margin:5px;
+			}
+			
+			progress {
+				
+				width:100%;
+				margin:auto;
+				margin-bottom:10px;
+			}
+			span {
+			
+			}
+			
+			@media all and (min-width: 681px) {
+				progress {
+					width:100%;
+				}
+			}
+			
+			@media all and (max-width: 680px) {
+				div.row {
+					flex-direction: column;
+				}
+				div.row {
+
+				display:block;
+				flex-flow: row;
+				}
+
+			}
+			
+			
+			
+		</style>
+
+		<script type="text/javascript">
+			
+if (!Object.keys) Object.keys = function(o) {
+  if (o !== Object(o))
+    throw new TypeError('Object.keys called on a non-object');
+  var k=[],p;
+  for (p in o) if (Object.prototype.hasOwnProperty.call(o,p)) k.push(p);
+  return k;
+}
+
+			var statusThisSite = '';
+			
+			var resp = {};
+			var dataResp = {};
+			
+			// LOAD PAGE STRUCTURE (crimefest.json)
+			function loadCrimefest () {
+					statusThisSite = document.querySelector('div#currentStatusOfThisSite');
+				var oReq = new XMLHttpRequest();
+					oReq.addEventListener("progress", updateProgress);
+					oReq.addEventListener("load", loadCrimefestTransferComplete);
+					oReq.addEventListener("loadstart", transferBegun);
+					oReq.addEventListener("error", transferFailed);
+					oReq.addEventListener("abort", transferCanceled);
+					oReq.open("GET", "crimefest.json", true);
+					//oReq.overrideMimeType('text/plain; charset=x-user-defined');
+					oReq.send();
+			}
+			
+			// HAVE PAGE STRUCTURE
+			function loadCrimefestTransferComplete (evt) {
+				resp = JSON.parse(this.responseText);
+				//alert(resp.globalstats.crimefest_challenge_chains_1.total);
+				statusThisSite.textContent = 'Status: loaded';
+				//alert(Object.keys(resp.markerid).length);
+				// GO ON
+				loadData();
+			}
+			
+			// LOAD DATA (api.json)
+			function loadData () {
+					statusThisSite = document.querySelector('div#currentStatusOfThisSite');
+				// LOAD DATA
+				var oReq = new XMLHttpRequest();
+					oReq.addEventListener("progress", updateProgress);
+					oReq.addEventListener("load", dataTransferComplete);
+					oReq.addEventListener("loadstart", transferBegun);
+					oReq.addEventListener("error", transferFailed);
+					oReq.addEventListener("abort", transferCanceled);
+					oReq.open("GET", "api.json", true);
+					//oReq.overrideMimeType('text/plain; charset=x-user-defined');
+					oReq.send();
+			}
+			
+			// HAVE DATA
+			function dataTransferComplete(dataEvt) {
+				var resp = JSON.parse(this.responseText);
+				if (resp && resp.response && resp.response.result && resp.response.result == 1) {
+					//alert(resp.response.globalstats);
+					dataResp = resp.response.globalstats;
+					statusThisSite.textContent = 'Status: data loaded';
+				} else {
+					alert("Dismissed! Something wrong, no DATA response.");
+				}
+				//GO ON
+				crimeTransferComplete();
+			}
+			
+			
+			// DO IT
+			function crimeTransferComplete(evt) {
+
+						statusThisSite = document.querySelector('div#currentStatusOfThisSite');
+
+				for (var i = 0, leng = Object.keys(resp.markerid).length; i < leng; i++) {
+						//alert(Object.keys(resp.markerinfo[i]).length)
+					if (Object.keys(resp.markerinfo[i]).length > 0) {
+					
+						// TEMPLATE
+						var tpl = document.querySelector('#template div').cloneNode(true);
+						var prg = tpl.querySelector('progress');
+						var txt = tpl.querySelector('p');
+						var num = tpl.querySelector('.numbers');
+						var per = tpl.querySelector('.percent');
+						var mis = tpl.querySelector('.missing');
+						
+						// LETS DO THE MAGIC
+						if (Object.keys(resp.markerinfo[i]).length) {
+							
+							var cfStat = resp.markerstatus[i] == 'crimefestpathfloormarkerscomplete'?'done':'open';
+							var mrkID = 0;
+							if (resp.markerid[i] != 'final') {
+								mrkID = resp.markerid[i].replace(/\d/g,'');
+								mrkID = mrkID.charCodeAt(0) -96;
+							} else {
+								mrkID = resp.markerid[i];
+							}
+							var cfText = resp.markerinfo[i].goaltext.replace(/<span>.*<\/span>/gi,'');
+								cfText = cfText.replace(/during the Road to Crimefest event\./gi, '');
+							var cfGoal = resp.markerinfo[i].statustotal;
+								//cfGoal = makeNiceNumbers(cfGoal); //preg_replace("/\D/", "", $crimefest_challenge_dallas_2_HITS[1]);
+								//wordnumbers short scale 
+							var wnSS = {'Million':'000000','Billion':'000000000','Trillion':'000000000000','':''};
+							var cfW = cfGoal.replace(/[\d\s\,]/g,'');
+							var	cfN = cfGoal.replace(/[\D\s\,]/g,'');
+								cfGoal = new Number(cfN+wnSS[cfW]).toPrecision();
+							var cfHeis = resp.markerinfo[i].heister;
+							var chName = 'crimefest_challenge_'+cfHeis+'_'+mrkID;
+							var chData = new Number(dataResp[chName].total).toPrecision();
+							var chStat = chData.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+							var chPerc = Math.floor((chData / cfGoal) * 100);
+							var chMiss = (cfGoal - chData).toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+								//chMiss = chMiss.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+							
+							//var txtNod = document.createTextNode(cfText);
+							//txt.appendChild(txtNod);
+							tpl.setAttribute('class',cfStat);
+							txt.textContent = cfText;
+							prg.setAttribute('max',cfGoal);
+							prg.setAttribute('value',chData);
+							num.textContent = chStat+' / '+cfGoal.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+							per.textContent = chPerc+'%';
+							mis.textContent = chMiss+' missing';
+						
+							//alert(resp.markerinfo[i].challengetext);
+							document.querySelector('#place').appendChild(tpl);
+							
+							// TWITTER Challenges
+							if (chName == 'crimefest_challenge_houston_1' || 
+								chName == 'crimefest_challenge_dallas_2' || 
+								chName == 'crimefest_challenge_chains_2') 
+							{
+								var chNameT = 'twitter_'+chName;
+								var chDataT = new Number(dataResp[chNameT].total).toPrecision();
+								var chDataC = parseInt(chData)+parseInt(chDataT);
+								var chPercT = Math.floor((chDataT / 50000) * 100);
+								var chPercC = Math.floor((chDataC / cfGoal) * 100);
+								var chStatT = chDataT.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+								var chMissT = (50000 - chDataT).toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+								var chMissC = (cfGoal - chDataC).toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+								//alert(parseInt(chData)+parseInt(chDataT) + ' - ' + chData + ' - ' + chDataT);
+								prg.setAttribute('value',chDataC);
+								num.textContent = chDataC.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ")+' | '+cfGoal.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+								per.textContent = chPercC+'%';
+								mis.textContent = chMissC+' missing';
+								
+							// FYI OBSELET THE HOLY GLORY 3:
+							
+								//progress
+								var hg3prg = document.querySelector('#'+chNameT+' progress');
+									hg3prg.value = chDataT;
+								
+								//numbers
+								var hg3num = document.querySelector('#'+chNameT+' .numbers');
+									hg3num.textContent = chStatT + ' / ' + '50 000';
+								
+								// percent
+								var hg3per = document.querySelector('#'+chNameT+' .percent');
+									hg3per.textContent = chPercT+'%';
+							
+								//missing
+								var hg3mis = document.querySelector('#'+chNameT+' .missing');
+									hg3mis.textContent = chMissT+' missing';
+								
+								if (chPercT > 99) {
+									document.querySelector('#'+chNameT+'').setAttribute('class','done');
+								}
+							}
+						}
+					}
+				}
+			}
+		
+			// NOT USED
+			// progress on transfers from the server to the client (downloads)
+			function updateProgress (oEvent) {
+			  if (oEvent.lengthComputable) {
+				var percentComplete = oEvent.loaded / oEvent.total;
+				// ...
+			  } else {
+				// Unable to compute progress information since the total size is unknown
+			  }
+			}
+			
+			function transferBegun(evt) {
+				console.log("The transfer get started.");
+				statusThisSite.textContent = 'Status: loading...';
+			}
+
+			function transferFailed(evt) {
+				console.log("An error occurred while transferring the file.");
+				statusThisSite.textContent = 'Status: error (pls reload or try it later)';
+			}
+			function transferCanceled(evt) {
+				console.log("The transfer has been canceled by the user.");
+				statusThisSite.textContent = 'Status: canceld (pls reload or do it later)';
+			}
+			
+			function makeNiceNumbers (numb) {
+			//	alert(typeof numb + ' ' + numb);
+			//	alert(typeof parseInt(numb,10).toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ") + ' ' +  							parseInt(numb,10).toString().replace(/\B(?=(\d{3})+(?!\d))/g, " "));
+				//return new Number(parseInt(numb,10)).toPrecision().toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+				return new Number(numb).toPrecision().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+			}
+
+		</script>
+	</head>
+	<body>
+	<div id="performance">
+	
+<div id="currentStatusOfThisSite"></div> <span id="timer"></span>  <span>(~11:00 min please <button onclick="document.location.reload(true);return false;">reload</button>)</span>
+<!-- 
+<div id="resize">
+	<button onlick="document.execCommand(decreaseFontSize, false, aValueArgument);">Resize Smaller</button>fontSize decreaseFontSize
+	<button>Resize Bigger</button>increaseFontSize
+</div>
+-->
+<div id="color">
+	<div class="done">Means Done</div>
+	<div class="open">Means Open</div>
+	<div class="notreached">Means Failed</div>
+</div>
+
+
+<div id="template">
+<div>
+<progress></progress> <span class="numbers"></span> <span class="percent"></span> <span class="missing"></span>
+<p></p>
+<a></a>
+</div>
+</div>
+
+<div id="place"></div>
+
+<hr />
+
+<h2>Obsolet FYI:</h2>
+
+<div class="row">
+<div id="twitter_crimefest_challenge_houston_1" class="open">
+<h3>Housten:</h3>
+<h4>Wankers <span class="status open">open</span></h4>
+<progress max="50000"></progress> <span class="numbers"></span> <span class="percent"></span> <span class="missing"></span>
+<p>Surprise Pete Gold, the voice of Hoxton <a href="https://twitter.com/petegold_" target="_blank">@petegold_</a> by having him reach 50,000 followers on Twitter during the Road to Crimefest event.</p>
+</div>
+
+<div id="twitter_crimefest_challenge_dallas_2" class="open">
+<h3>Dallas:</h3>
+<h4>Let's Do This <span class="status open">open</span></h4>
+<progress max="50000"></progress> <span class="numbers"></span> <span class="percent"></span> <span class="missing"></span>
+<p>Surprise Eric Etebari, the face of Dallas <a href="https://twitter.com/EricEtebari" target="_blank">@EricEtebari</a> by having him reach 50,000 followers on Twitter during the Road to Crimefest event.</p>
+</div>
+
+<div id="twitter_crimefest_challenge_chains_2" class="open">
+<h3>Chains:</h3>
+<h4>Get the Fuck Down! <span class="status open">open</span></h4>
+<progress max="50000"></progress> <span class="numbers"></span> <span class="percent"></span> <span class="missing"></span>
+<p>Surprise Damion Poitier, the face and voice of Chains <a href="https://twitter.com/DamionPoitier" target="_blank">@damionpoitier</a> by having him reach 50,000 followers on Twitter during the Road to Crimefest event.</p>
+</div>
+</div>
+
+<hr />
+
+<footer>
+<p>This is a private site and is not affiliated with any company.</p>
+	<p>This will inform you about the progress of challenges during the Payday2 crimefest 2015. Have fun and let they Helm...</p>
+	<p><strong>This information is supplied without liability.</strong></p>
+	<p>The information from steam/twitter will be updated every 5-25 minutes automatical (mostly ~11 min. pls reload).<br />
+		New features and new challenges will be made from hand and will updated if is done or even not. <br />
+	</p>
+	<p>For more information about the Payday2 crimefest 2015 on steam visit <a href="http://steamcommunity.com/app/218620/discussions/8/523898291510413971/" title="Steamcommunity forum" target="_blank">Steamcommunity discussions</a></p>
+</footer>
+
+
+<script type="text/javascript">
+	loadCrimefest ();
+	//goForIt();
+	var theTimer = document.querySelector('#timer');
+	var firstTime = parseInt(new Date().getTime()/1000);
+	var lastTime = 0;
+
+	function timerInt (){
+		var currentTime = parseInt(new Date().getTime()/1000);
+		var diffSinceFirstTime = currentTime - firstTime;
+		lastTime = diffSinceFirstTime;
+		
+		var seconds = parseInt (lastTime % 60);
+			seconds = seconds<10?'0'+seconds:seconds;
+		var minutes = parseInt (lastTime / 60);
+			minutes = minutes<10?'0'+minutes:minutes;
+			
+		if (minutes>=60) {
+			theTimer.textContent = 'Over 1h since last reload';
+			// window.clearInterval(timerIntervalID);
+		} else {
+			theTimer.textContent = minutes + ':' + seconds + ' since last reload';
+		}
+		
+	}
+	
+	var timerIntervalID = window.setInterval(timerInt, 1000);
+	
+	
+</script>
+</div>
+	</body>
+</html>
