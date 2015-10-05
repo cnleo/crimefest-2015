@@ -7,6 +7,15 @@ http://wp12411577.server-he.de/crimefest-2015/
 
 Source files and archive will follow.
 
+- api.json 
+brings us the actuality of SteamApi and TwitterFollows and the Peak/Current Gamer 
+
+- crimefest.json
+brings us the challenge information from Overkill
+
+http://wp12411577.server-he.de/crimefest-2015/api.json
+http://wp12411577.server-he.de/crimefest-2015/crimefest.json
+
 
 
 
