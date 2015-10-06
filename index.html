@@ -12,7 +12,7 @@
 				font-family:"DejaVu Sans",FreeSans,"Open Sans",Arial,sans-serif;
 				color:white;
 				background-color:grey;
-				font-size: 0.75em;
+				font-size: 0.8em;
 				/* 
 				 Dim Gray	#696969
 				Slate Gray #708090
@@ -83,8 +83,7 @@
 			}
 			
 			.soon,body {
-
-				animation: blend 10s linear  0s infinite alternate;
+				animation: blend 15s linear  0s infinite alternate;
 			}
 			@keyframes blend {
 				0% {background-color:#696969;}
@@ -93,6 +92,20 @@
 				75% {}
 				100% {background-color:#708090;}
 			}
+			
+			div.open,div.done,div.notreached {
+				animation: glow 5s linear  0s infinite alternate;
+
+			}
+			@keyframes glow {
+
+				0% {box-shadow: 0px 0px 9px 3px rgba(255, 255, 190, .1); }
+
+				100% {box-shadow: 0px 0px 9px 3px rgba(255, 255, 190, .75); }
+			}
+			
+			
+			
 			/* 
 						https://developer.mozilla.org/de/docs/Web/Guide/CSS/CSS_Animationen_nutzen
 				 Dim Gray	#696969
@@ -120,7 +133,32 @@
 				width:100%;
 				margin:auto;
 				margin-bottom:10px;
+				
+				
+				background-color:grey;
+				border:1px solid silver;
+				height:2em;
+
 			}
+			progress::-ms-fill {  /* IE10 */
+				 background-image: linear-gradient(to bottom, rgba(255, 255, 0, 0.3), rgba(255, 255, 0, 1));
+				 border:none;
+			}
+			progress[value] {  /* IE10, FIREFOX*/
+				background-color:grey;
+			}
+			progress::-webkit-progress-bar-value { /* ? */
+
+			}
+			progress::-webkit-progress-value { /* OPERA, CHROME */
+				background-image: linear-gradient(to bottom, rgba(255, 255, 0, 0.3), rgba(255, 255, 0, 1));
+			}
+			progress::-moz-progress-bar { /* FIREFOX */
+				background-image: linear-gradient(to bottom, rgba(255, 255, 0, 0.3), rgba(255, 255, 0, 1));
+			}
+			
+			
+			
 			span {
 			
 			}
@@ -204,12 +242,13 @@ if (!Object.keys) Object.keys = function(o) {
 			// HAVE DATA
 			function dataTransferComplete(dataEvt) {
 				var resp = JSON.parse(this.responseText);
-				if (resp && resp.response && resp.response.result && resp.response.result == 1) {
+				if (resp && resp.response && resp.response.result && resp.response.result == 1 && resp.response.globalstats) {
 					//alert(resp.response.globalstats);
 					dataResp = resp.response.globalstats;
 					statusThisSite.textContent = 'Status: data loaded';
 				} else {
-					alert("Dismissed! Something wrong, no DATA response.");
+					//alert("Dismissed! Something wrong, no DATA response.");
+					statusThisSite.textContent = 'Status: no data loaded';
 				}
 				//GO ON
 				crimeTransferComplete();
@@ -357,7 +396,7 @@ if (!Object.keys) Object.keys = function(o) {
 	<body>
 	<div id="performance">
 	
-<div id="currentStatusOfThisSite"></div> <span id="timer"></span>  <span>(~11:00 min please <button onclick="document.location.reload(true);return false;">reload</button>)</span>
+<div id="currentStatusOfThisSite"></div> <span id="timer">&nbsp;</span>  <span>(~11:00 min please <button onclick="document.location.reload(true);return false;">reload</button>)</span>
 <!-- 
 <div id="resize">
 	<button onlick="document.execCommand(decreaseFontSize, false, aValueArgument);">Resize Smaller</button>fontSize decreaseFontSize
