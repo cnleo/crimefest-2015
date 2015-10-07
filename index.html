@@ -17,7 +17,6 @@
 				 Dim Gray	#696969
 				Slate Gray #708090
 				Web Gray #808080 
-				
 				*/
 			}
 			div#performance {
@@ -95,50 +94,32 @@
 			
 			div.open,div.done,div.notreached {
 				animation: glow 5s linear  0s infinite alternate;
-
 			}
 			@keyframes glow {
-
 				0% {box-shadow: 0px 0px 9px 3px rgba(255, 255, 190, .1); }
-
 				100% {box-shadow: 0px 0px 9px 3px rgba(255, 255, 190, .75); }
 			}
-			
-			
-			
-			/* 
-						https://developer.mozilla.org/de/docs/Web/Guide/CSS/CSS_Animationen_nutzen
-				 Dim Gray	#696969
-				Slate Gray #708090
-				Web Gray #808080 
-				
-				*/
-			div.row {
 
+			div.row {
 				display:flex;
 				flex-flow: row;
 			}
-			
 			div.row div {
 				display:flex;
 				flex-direction:column;
 				/* flex-basis:25%; */
 				flex:1;
-				
 				margin:5px;
 			}
 			
 			progress {
-				
 				width:100%;
 				margin:auto;
 				margin-bottom:10px;
 				
-				
 				background-color:grey;
 				border:1px solid silver;
 				height:2em;
-
 			}
 			progress::-ms-fill {  /* IE10 */
 				 background-image: linear-gradient(to bottom, rgba(255, 255, 0, 0.3), rgba(255, 255, 0, 1));
@@ -156,13 +137,7 @@
 			progress::-moz-progress-bar { /* FIREFOX */
 				background-image: linear-gradient(to bottom, rgba(255, 255, 0, 0.3), rgba(255, 255, 0, 1));
 			}
-			
-			
-			
-			span {
-			
-			}
-			
+
 			@media all and (min-width: 681px) {
 				progress {
 					width:100%;
@@ -172,13 +147,9 @@
 			@media all and (max-width: 680px) {
 				div.row {
 					flex-direction: column;
+					display:block;
+					flex-flow: row;
 				}
-				div.row {
-
-				display:block;
-				flex-flow: row;
-				}
-
 			}
 			
 			
@@ -284,7 +255,7 @@ if (!Object.keys) Object.keys = function(o) {
 								mrkID = resp.markerid[i];
 							}
 							var cfText = resp.markerinfo[i].goaltext.replace(/<span>.*<\/span>/gi,'');
-								cfText = cfText.replace(/during the Road to Crimefest event\./gi, '');
+								cfText = cfText.replace(/during the Road to Crimefest event\.?/gi, '');
 							var cfGoal = resp.markerinfo[i].statustotal;
 								//cfGoal = makeNiceNumbers(cfGoal); //preg_replace("/\D/", "", $crimefest_challenge_dallas_2_HITS[1]);
 								//wordnumbers short scale 
