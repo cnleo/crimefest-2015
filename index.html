@@ -230,6 +230,13 @@ if (!Object.keys) Object.keys = function(o) {
 			function crimeTransferComplete(evt) {
 
 						statusThisSite = document.querySelector('div#currentStatusOfThisSite');
+						
+				var chDone = 0;
+				for (var i = 0, leng = Object.keys(resp.markerstatus).length; i < leng; i++) {
+					if (resp.markerstatus[i] == 'crimefestpathfloormarkerscomplete') {
+						chDone++;
+					}
+				}
 
 				for (var i = 0, leng = Object.keys(resp.markerid).length; i < leng; i++) {
 						//alert(Object.keys(resp.markerinfo[i]).length)
@@ -265,7 +272,11 @@ if (!Object.keys) Object.keys = function(o) {
 								cfGoal = new Number(cfN+wnSS[cfW]).toPrecision();
 							var cfHeis = resp.markerinfo[i].heister;
 							var chName = 'crimefest_challenge_'+cfHeis+'_'+mrkID;
-							var chData = new Number(dataResp[chName].total).toPrecision();
+							if (chName == 'crimefest_challenge_houston_6') {
+								var chData = new Number(chDone).toPrecision();
+							} else {
+								var chData = new Number(dataResp[chName].total).toPrecision();
+							}
 							var chStat = chData.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
 							var chPerc = Math.floor((chData / cfGoal) * 100);
 							var chMiss = (cfGoal - chData).toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");

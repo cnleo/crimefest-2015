@@ -47,8 +47,34 @@ if ($crimefestContent !== false) {
 	$crimefestContent = utf8_encode($crimefestContent);
 
 	$crimefestContentPattern = '/\<div class=\"crimefestpathfloormarkers (?P<markerclassid>.*) (?P<markerstatus>.*)\" data-thismarker=\"(?P<markerid>[\w\d]*)\">?\s?((?P<markerinfo>.*)>)?<\/div>/i';
+	$crimefestContentPattern2 = '/\<div class=\"crimefestpathfloormarkers (?P<markerclassid>.*) (?P<markerstatus>.*)\" data-thismarker=\"(?P<markerid>[\w\d]*)\">?\s?((?P<markerinfo>.*\s*.*)>)?<\/div>/i';
 		
-	if (preg_match_all($crimefestContentPattern,$crimefestContent,$crimefestContentMatches)){
+	//$summeArray = [];	
+	if (preg_match_all($crimefestContentPattern,$crimefestContent,$crimefestContentMatches)) {
+	
+		if (preg_match_all($crimefestContentPattern2,$crimefestContent,$crimefestContentMatches2)) {
+			for ($m2 = 0; $m2 < count($crimefestContentMatches2['markerid']); $m2++) {
+				$summeIndex = false;
+				for ($m1 = 0; $m1 < count($crimefestContentMatches['markerid']); $m1++) {
+				
+					if ($crimefestContentMatches2['markerid'][$m2] == $crimefestContentMatches['markerid'][$m1]) {
+						$summeIndex = false;
+						break 1;
+					} else {
+						$summeIndex = $m2;
+					}
+				
+				}
+				
+				if ($summeIndex != false) {
+					$crimefestContentMatches['markerclassid'][] = $crimefestContentMatches2['markerclassid'][$summeIndex];
+					$crimefestContentMatches['markerstatus'][] = $crimefestContentMatches2['markerstatus'][$summeIndex];
+					$crimefestContentMatches['markerid'][] = $crimefestContentMatches2['markerid'][$summeIndex];
+					$crimefestContentMatches['markerinfo'][] = $crimefestContentMatches2['markerinfo'][$summeIndex];
+				}
+				
+			}
+		}
 		
 		for ($m = 0; $m < count($crimefestContentMatches['markerinfo']); $m++) {
 			
@@ -85,7 +111,7 @@ if ($crimefestContent !== false) {
 				die('Sorry the current folder is not writeable');
 			}
 			
-			if(!mkdir($pathToArchive, 0750, true)) { // 0750, 0751 or 0755; 0770 or 0775 is bad and 0777 is very bad
+			if(!mkdir($pathToArchive, 0750, true)) { // 0750,770
 				die('Sorry mkdir failed');
 			}
 		}
