@@ -255,11 +255,11 @@ if (!Object.keys) Object.keys = function(o) {
 							
 							var cfStat = resp.markerstatus[i] == 'crimefestpathfloormarkerscomplete'?'done':'open';
 							var mrkID = 0;
-							if (resp.markerid[i] != 'final') {
+							if (resp.markerid[i] != 'final1') {
 								mrkID = resp.markerid[i].replace(/\d/g,'');
 								mrkID = mrkID.charCodeAt(0) -96;
 							} else {
-								mrkID = resp.markerid[i];
+								mrkID = resp.markerid[i].replace(/\d/g,'');
 							}
 							var cfText = resp.markerinfo[i].goaltext.replace(/<span>.*<\/span>/gi,'');
 								cfText = cfText.replace(/during the Road to Crimefest event\.?/gi, '');
@@ -272,6 +272,9 @@ if (!Object.keys) Object.keys = function(o) {
 								cfGoal = new Number(cfN+wnSS[cfW]).toPrecision();
 							var cfHeis = resp.markerinfo[i].heister;
 							var chName = 'crimefest_challenge_'+cfHeis+'_'+mrkID;
+							if (chName == 'crimefest_challenge_chains_final') {
+								chName = 'crimefest_challenge_final'
+							}
 							if (chName == 'crimefest_challenge_houston_6') {
 								var chData = new Number(chDone).toPrecision();
 							} else {
