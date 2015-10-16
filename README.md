@@ -3,7 +3,7 @@ This will show you the status of Payday2 Crimefest 2015.
 
 Live Demo: 
 http://wp12411577.server-he.de/crimefest-2015/
-It is Done R.I.P. ... and now Payday 2 have Microtransaction and we are all happy about that.
+It is Done R.I.P. ... and now Payday 2 has Microtransaction and we are all happy about that.
  
 Source files and archive will follow.
 
